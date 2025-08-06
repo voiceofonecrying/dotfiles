@@ -19,5 +19,12 @@ return {
     scroll = { enabled = true },
     statuscolumn = { enabled = true },
     words = { enabled = true },
+    lazygit = {enabled = true}
   },
+  keys = {
+    { "<leader>gg", function() Snacks.picker.git_branches() end, desc = "Git Branches" },
+    { "<leader>gl", function() Snacks.picker.git_log() end, desc = "Git Log" },
+    { "<leader>gs", function() Snacks.picker.git_status() end, desc = "Git Status" },
+    { "<leader>gf", function() Snacks.picker.git_log_file() end, desc = "Git Log File" }, 
+    }
 }
