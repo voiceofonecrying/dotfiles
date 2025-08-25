@@ -9,7 +9,18 @@ vim.pack.add({
 require 'mason'.setup()
 require 'mason-lspconfig'.setup()
 
+vim.lsp.config('lua_ls', {
+    settings = {
+        workspace = {
+            library = vim.api.nvim_get_runtime_file('', true)
+        }
+    }
+})
+
 vim.keymap.set('n', '<leader><Tab>', vim.lsp.buf.format)
+-- Tab cycles lsp completions
+vim.keymap.set('i', '<Tab>', '<C-n>')
+vim.keymap.set('i', '<S-Tab>', '<C-b>')
 
 vim.diagnostic.config({
     --virtual_text = true,
