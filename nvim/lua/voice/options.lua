@@ -1,7 +1,8 @@
-local o = vim.opt
+local o = vim.o
 
 o.nu = true
 o.relativenumber = true
+o.winborder = 'rounded'
 
 o.smartindent = true
 o.smarttab = true
@@ -21,7 +22,8 @@ o.hlsearch = false
 o.incsearch = true
 o.scrolloff = 8
 
-o.colorcolumn = '80'
-o.signcolumn = number
+o.colorcolumn = '100'
+--or yes?
+o.signcolumn = 'number'
 o.list = true
 vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
