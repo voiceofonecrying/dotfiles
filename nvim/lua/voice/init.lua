@@ -2,6 +2,7 @@ require "voice.map"
 require "voice.options"
 require "voice.lsp"
 require "voice.plug"
+require "voice.dap"
 
 --No statusline bar
 vim.cmd(":hi statusline guibg=NONE")
@@ -41,4 +42,4 @@ local function pack_clean()
     end
 end
 
-vim.keymap.set("n", "<leader>pc", pack_clean)
+vim.keymap.set("n", "<leader>pc", pack_clean, {desc='pack clean'})
