@@ -4,11 +4,12 @@ local keymap = vim.keymap
 vim.pack.add {
     { src = GH .. 'stevearc/oil.nvim' },
     { src = GH .. 'nvim-telescope/telescope.nvim' },
-    { src = GH .. 'echasnovski/mini.completion' },
     { src = GH .. 'echasnovski/mini.icons' },
     { src = GH .. 'echasnovski/mini.snippets' },
-    { src = GH .. 'echasnovski/mini.diff' },
-    { src = GH .. 'rose-pine/neovim' },
+    { src = GH .. 'echasnovski/mini.files' },
+    { src = GH .. 'echasnovski/mini.animate' },
+    { src = GH .. 'lewis6991/gitsigns.nvim' },
+    { src = GH .. 'nickkadutskyi/jb.nvim' },
     { src = GH .. 'folke/lazydev.nvim' },
     { src = GH .. 'folke/which-key.nvim' },
     { src = GH .. 'nvim-lua/plenary.nvim' },
@@ -19,20 +20,33 @@ vim.pack.add {
     { src = GH .. 'm4xshen/hardtime.nvim' },
     { src = GH .. 'rcarriga/nvim-notify' },
     { src = GH .. 'tris203/precognition.nvim' },
-    { src = GH .. 'pocco81/true-zen.nvim' },
     { src = GH .. 'christoomey/vim-tmux-navigator' },
+    { src = GH .. 'numToStr/Comment.nvim' },
+    { src = GH .. 'andrewferrier/wrapping.nvim' },
 }
 
-vim.cmd 'colorscheme rose-pine-moon'
+vim.cmd 'colorscheme jb'
+require('Comment').setup()
 require('lazydev').setup()
-require('mini.completion').setup()
+require('wrapping').setup()
 require('mini.icons').setup()
 require('mini.snippets').setup()
+require('mini.files').setup()
+require('mini.surround').setup()
+require('mini.animate').setup({
+    cursor = {timing=function() return 3 end},
+    scroll = { timing = function() return 3 end },
+})
 local which_key = require 'which-key'
 
 which_key.add {
-    { '<leader>p', desc='Pick' },
-    { '<leader>d', desc='DAP'},
+    { '<leader>p', desc = 'find' },
+    { '<leader>d', desc = 'debug' },
+    { '<leader>g', desc = 'git' },
+    { '<leader>r', desc = 'refactor' },
+    { '<leader>tw', desc = 'training wheels' },
+    { '<leader>v', desc = 'venv select' },
+
     --{ '<leader>a', icon = 'f1845' }
 }
 
@@ -54,19 +68,17 @@ keymap.set('n', '<leader>pf', builtin.find_files, { desc = 'files' })
 keymap.set('n', '<leader>pg', builtin.live_grep, { desc = 'grep' })
 keymap.set('n', '<leader>pb', builtin.buffers, { desc = 'buffers' })
 keymap.set('n', '<leader>ph', builtin.help_tags, { desc = 'help' })
+keymap.set('n', '<leader>pp', function () require('mini.files').open() end, {desc='explorer'})
 
-require('mini.diff').setup()
---MiniDiff.config.view.style = 'sign'; vim.cmd('edit')
---keymap.set('n', '<leader>do', function() MiniDiff.toggle_overlay(0) end)
 
 local harpoon = require 'harpoon'
 harpoon.setup()
 keymap.set('n', '<leader>h', function()
     harpoon.ui:toggle_quick_menu(harpoon:list())
-end, {desc='\'Pooned files'})
+end, { desc = '\'Pooned files' })
 keymap.set('n', '<leader>a', function()
     harpoon:list():add()
-end, {desc='\'Poon file'})
+end, { desc = '\'Poon file' })
 keymap.set('n', '<F1>', function()
     harpoon:list():select(1)
 end)
@@ -86,44 +98,21 @@ keymap.set('n', '<F10>', function()
     harpoon:list():next()
 end)
 
-local highlight = {
-    'RainbowViolet',
-    'RainbowCyan',
-    'RainbowOrange',
-    'RainbowYellow',
-    'RainbowGreen',
-    'RainbowBlue',
-    'RainbowRed',
-}
-
-local hooks = require 'ibl.hooks'
-hooks.register(hooks.type.HIGHLIGHT_SETUP, function()
-    vim.api.nvim_set_hl(0, 'RainbowRed', { fg = '#E06C75' })
-    vim.api.nvim_set_hl(0, 'RainbowYellow', { fg = '#E5C07B' })
-    vim.api.nvim_set_hl(0, 'RainbowBlue', { fg = '#61AFEF' })
-    vim.api.nvim_set_hl(0, 'RainbowOrange', { fg = '#D19A66' })
-    vim.api.nvim_set_hl(0, 'RainbowGreen', { fg = '#98C379' })
-    vim.api.nvim_set_hl(0, 'RainbowViolet', { fg = '#C678DD' })
-    vim.api.nvim_set_hl(0, 'RainbowCyan', { fg = '#56B6C2' })
-end)
-
-require('ibl').setup { indent = { highlight = highlight } }
+require('ibl').setup()
 
 keymap.set('n', '<leader>tw', function()
     require('precognition').toggle()
     vim.cmd ':Hardtime toggle'
 end)
 
-local truezen = require('true-zen')
-keymap.set('n', '<leader>zn', function()
-  local first = 0
-  local last = vim.api.nvim_buf_line_count(0)
-  truezen.narrow(first, last)
-end, { noremap = true })
-keymap.set('v', '<leader>zn', function()
-  local first = vim.fn.line('v')
-  local last = vim.fn.line('.')
-  truezen.narrow(first, last)
-end, { noremap = true })
-keymap.set('n', '<leader>zm', truezen.minimalist, { noremap = true })
-keymap.set('n', '<leader>zz', truezen.ataraxis, { noremap = true })
+local gitsigns = require 'gitsigns'
+gitsigns.setup({
+    current_line_blame = true,
+    current_line_blame_opts = {
+        delay = 0,
+        virt_text_pos = 'right_align'
+
+    }
+})
+keymap.set('n', '<leader>gh', function () gitsigns.toggle_linehl() end, { desc = 'git highlight' })
+keymap.set('n', '<leader>md', '<cmd>Markview HybridToggle<CR>', { desc = 'Toggle viewer' })
